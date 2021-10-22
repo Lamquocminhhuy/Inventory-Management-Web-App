@@ -1,0 +1,83 @@
+timestamp: 2021-10-18T19:40:32.853877
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" CHAR(512) UNIQUE,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2021-10-18T19:40:32.864500
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "path" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+);
+success!
+timestamp: 2021-10-18T23:57:00.336396
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `username` VARCHAR(512) UNIQUE,
+    `email` VARCHAR(512) UNIQUE,
+    `password` VARCHAR(512),
+    `first_name` VARCHAR(512),
+    `last_name` VARCHAR(512),
+    `sso_id` VARCHAR(512),
+    `action_token` VARCHAR(512),
+    `last_password_change` DATETIME,
+    `past_passwords_hash` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2021-10-18T23:57:12.249028
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `username` VARCHAR(512) UNIQUE,
+    `email` VARCHAR(512) UNIQUE,
+    `password` VARCHAR(512),
+    `first_name` VARCHAR(512),
+    `last_name` VARCHAR(512),
+    `sso_id` VARCHAR(512),
+    `action_token` VARCHAR(512),
+    `last_password_change` DATETIME,
+    `past_passwords_hash` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2021-10-18T23:58:24.471079
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `username` VARCHAR(512) UNIQUE,
+    `email` VARCHAR(512) UNIQUE,
+    `password` VARCHAR(512),
+    `first_name` VARCHAR(512),
+    `last_name` VARCHAR(512),
+    `sso_id` VARCHAR(512),
+    `action_token` VARCHAR(512),
+    `last_password_change` DATETIME,
+    `past_passwords_hash` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-10-18T23:58:24.508887
+CREATE TABLE `auth_user_tag_groups`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `path` VARCHAR(512),
+    `record_id` INT  , INDEX `record_id__idx` (`record_id`), FOREIGN KEY (`record_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-10-19T00:27:49.101891
+CREATE TABLE `product`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `name` VARCHAR(512),
+    `quantity` INTEGER,
+    `unit` VARCHAR(512),
+    `created_by` VARCHAR(512),
+    `created_at` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
