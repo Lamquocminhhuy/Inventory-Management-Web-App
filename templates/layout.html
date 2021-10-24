@@ -1,126 +1,75 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base href="[[=URL('static')]]/">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAAQEAAAEAIAAwAAAAFgAAACgAAAABAAAAAgAAAAEAIAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAA=="/>
-    <link rel="stylesheet" href="css/no.css">
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+<head>
+  <base href="[[=URL('static')]]/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/no.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-  </head>
-  <body>
-    <header>
-      <nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+    integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
+    crossorigin="anonymous" />
+  <title>Sale Management</title>
+</head>
 
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      <a class="navbar-item" href="[[=URL('index')]]">Sale Management System</a>
-      
-    </div>
-    <div class="navbar-end">
-       <div class="navbar-item has-dropdown is-hoverable">
-             [[if globals().get('user'):]]
-        <a class="navbar-link">
-           [[=globals().get('user',{}).get('email')]]
-        </a>
-        <div class="navbar-dropdown">
-       <a class="navbar-item" href="[[=URL('auth/profile')]]">Edit Profile</a>
-          [[if 'change_password' in globals().get('actions',{}).get('allowed_actions',{}):]]
-                <a class="navbar-item"  href="[[=URL('auth/change_password')]]">Change Password</a>
+<body>
+  <header>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="[[=URL('index')]]">Sale Management System</a>
+
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item has-dropdown is-hoverable">
+            [[if globals().get('user'):]]
+            <a class="navbar-link">
+              [[=globals().get('user',{}).get('email')]]
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" href="[[=URL('auth/profile')]]">Edit Profile</a>
+              [[if 'change_password' in globals().get('actions',{}).get('allowed_actions',{}):]]
+              <a class="navbar-item" href="[[=URL('auth/change_password')]]">Change Password</a>
               [[pass]]
               <a class="navbar-item" href="[[=URL('auth/logout')]]">Logout</a>
-        </div>
-         [[else:]]
-    <div class="navbar-item">
-        <div class="buttons">
+            </div>
+            [[else:]]
+            <!-- <div class="navbar-item">
+              <div class="buttons">
 
-         <a class="navbar-item button is-primary" href="[[=URL('auth/register')]]">Sign up</a>
+                <a class="navbar-item button is-primary" href="[[=URL('auth/register')]]">Sign up</a>
 
                 <a class="navbar-item button is-light" href="[[=URL('auth/login')]]">Log in</a>
+              </div>
+            </div> -->
+            [[pass]]
+          </div>
+
         </div>
       </div>
-            [[pass]]
-      </div>
+    </nav>
 
-    </div>
-  </div>
-</nav>
-      <!-- Navigation bar -->
-<!--      <nav class="black">-->
-<!--        &lt;!&ndash; Logo &ndash;&gt;-->
-<!--        <a href="[[=URL('index')]]">-->
-<!--          <b>Product Management</b>-->
-<!--        </a>-->
-<!--        <a href="[[=URL('index')]]">-->
-<!--          <b>Sale Management</b>-->
-<!--        </a>-->
-<!--        <a href="[[=URL('index')]]">-->
-<!--          <b>Sale Management</b>-->
-<!--        </a>-->
-<!--        &lt;!&ndash; Do not touch this &ndash;&gt;-->
-<!--        <label for="hamburger">☰</label>-->
-<!--        <input type="checkbox" id="hamburger">-->
-<!--        &lt;!&ndash; Left menu ul/li &ndash;&gt;-->
-<!--        [[block page_left_menu]][[end]]-->
-<!--        &lt;!&ndash; Right menu ul/li &ndash;&gt;-->
-<!--        <ul>-->
-<!--          [[if globals().get('user'):]]-->
-<!--          <li>-->
-<!--            <a class="navbar-link is-primary">-->
-<!--              [[=globals().get('user',{}).get('email')]]-->
-<!--            </a>-->
-<!--            <ul>-->
-<!--              <li><a href="[[=URL('auth/profile')]]">Edit Profile</a></li>-->
-<!--              [[if 'change_password' in globals().get('actions',{}).get('allowed_actions',{}):]]-->
-<!--                <li><a href="[[=URL('auth/change_password')]]">Change Password</a></li>-->
-<!--              [[pass]]-->
-<!--              <li><a href="[[=URL('auth/logout')]]">Logout</a></li>-->
-<!--            </ul>-->
-<!--          </li>-->
-<!--          [[else:]]-->
-<!--          <li>-->
-<!--            Login-->
-<!--            <ul>-->
-<!--              <li><a href="[[=URL('auth/register')]]">Sign up</a></li>-->
-<!--              <li><a href="[[=URL('auth/login')]]">Log in</a></li>-->
-<!--            </ul>-->
-<!--          </li>-->
-<!--          [[pass]]-->
-<!--        </ul>-->
-<!--      </nav>-->
-    </header>
-    <!-- beginning of HTML inserted by extending template -->
-    <center>
-      <div>
-        <!-- Flash alert messages, first optional one in data-alert -->
-        <flash-alerts class="padded" data-alert="[[=globals().get('flash','')]]"></flash-alerts>
-      </div>
-      <main class="padded">
-        <!-- contect injected by extending page -->
-        [[include]]
-      </main>
-    </center>
-    <!-- end of HTML inserted by extending template -->
-    <!-- <footer class="black padded">
-      <p>
-        Made with py4web
+  </header>
+  <!-- beginning of HTML inserted by extending template -->
+  <center>
+    <main class="padded">
+      <!-- contect injected by extending page -->
+      [[include]]
+    </main>
+  </center>
+  <!-- end of HTML inserted by extending template -->
+  <footer class="black padded">
+      <p class="content has-text-centered"> 
+        Sale Management 1.0
       </p>
-    </footer> -->
-  </body>
-  <!-- You've gotta have utils.js -->
-  <script src="js/utils.js"></script>
-  <script src="js/showHide.js"></script>
-  [[block page_scripts]]<!-- individual pages can add scripts here -->[[end]]
+    </footer>
+</body>
+<!-- You've gotta have utils.js -->
+<script src="js/utils.js"></script>
+<script src="js/showHide.js"></script>
+[[block page_scripts]]
+<!-- individual pages can add scripts here -->[[end]]
+
 </html>

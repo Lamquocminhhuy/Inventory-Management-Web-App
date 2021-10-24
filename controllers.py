@@ -28,44 +28,78 @@ Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app w
 from os import truncate
 from types import MethodType
 from py4web import action, request, abort, redirect, URL
-from yatl.helpers import A
+from yatl.helpers import A, P
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from .models import get_user_email
 from py4web.utils.form import Form, FormStyleBulma
 from py4web.utils.grid import Grid, GridClassStyleBulma
 
 
+@action('dashboard')
+@action.uses(db,auth.user, 'dashboard.html')
+def dashboard():
+
+    return dict()
+
+
 @action('index', method=["GET", "POST"])
 @action('index/<path:path>', method=["GET", "POST"])
-@action.uses(db,auth, 'index.html')
+@action.uses(db,auth.user, 'index.html')
 def index(path=None):
+
+    raw_categories = db.executesql("SELECT * FROM categories;") #Tuple
+    categories = dict((y, x) for x, y in raw_categories)
+    print(categories)
+    grid = Grid(
+        path,query = db.product.id > 0,
+        search_form=None,editable=True, deletable=True, details=False, create=True,
+        grid_class_style=GridClassStyleBulma,formstyle=FormStyleBulma,rows_per_page=4,
+        search_queries=[
+        ['By Name', lambda val: db.product.name.contains(val)],
+        ['By Quantity', lambda val: db.product.quantity == val],
+        ['By Category',  lambda val: db.product.category == categories[str(val)]],
+        ]
+    )
+    #Count total product
+    total = db(db.product.id > 0).select()
+    outOfStock = db(db.product.quantity == 0).select()
+    return dict(grid=grid, total=len(total), outOfStock=len(outOfStock))
+
+
+@action('category', method=["GET", "POST"])
+@action('category/<path:path>', method=["GET", "POST"])
+@action.uses(db,auth.user, 'category.html')
+def category(path=None):
     # Display data by hand :v
     # rows = db(db.product.created_by == get_user_email()).select()
     grid = Grid(
         path,
-        query = db.product.id > 0,
+        query = db.categories.id > 0,
         search_form=None,
         editable=True, deletable=True, details=False, create=True,
-     
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
-        search_queries=[['By Name', lambda val: db.product.name.contains(val)],['By Quantity', lambda val: db.product.quantity == val]]
+        search_queries=[['By Name', lambda val: db.categories.name.contains(val)]]
 
 
     )
-    return dict(grid=grid)
+    #Count total product
+    total = db(db.categories.id > 0).select()
+
+
+
+    return dict(grid=grid, total=len(total))
 
 @action('user', method=["GET", "POST"])
 @action('user/<path:path>', method=["GET", "POST"])
-@action.uses(db,auth, 'user.html')
-def index(path=None):
+@action.uses(db,auth.user, 'user.html')
+def user(path=None):
    
     grid = Grid(
         path,
         query = db.auth_user.id > 0,
         search_form=None,
         editable=True, deletable=True, details=False, create=True,
-     
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
         search_queries=[['By Username', lambda val: db.auth_user.username.contains(val)],['By Email', lambda val: db.auth_user.email.contains(val)]],
@@ -113,9 +147,9 @@ def add():
 #     return dict(form=form)
 
 
-@action('delete_product/<product_id:int>')
-@action.uses(db, session, auth.user)
-def delete(product_id=None):
-    assert product_id is not None
-    db(db.product.id == product_id).delete()
-    redirect(URL('index'))
+# @action('delete_product/<product_id:int>')
+# @action.uses(db, session, auth.user)
+# def delete(product_id=None):
+#     assert product_id is not None
+#     db(db.product.id == product_id).delete()
+#     redirect(URL('index'))

@@ -1,12 +1,12 @@
 [[extend 'layout.html']]
-<h1 class="title">User Management</h1>
+<h1 class="title" onclick="myFunction()">User Management</h1>
 
 <hr >
   <div class="columns">
           [[include 'sideMenu.html']]
     </div>
 
-    <div class="column" style="border-left: solid 1px;" onclick="myFunction()">
+    <div class="column" style="border-left: solid 1px;" >
         <div class="container">
             [[=grid.render()]]
         </div>
