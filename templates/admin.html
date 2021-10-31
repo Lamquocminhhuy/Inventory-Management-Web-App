@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+[[include 'bootstrap/head.html']] 
+
+
+
+<style>
+    #total-orders{
+    background-color: #4cb4c7;
+}
+
+
+#orders-delivered{
+    background-color: #7abecc;
+}
+
+#orders-pending{
+    background-color: #7CD1C0;
+}
+
+ul,li{
+    list-style: none;
+}
+
+</style>
+</head>
+
+<body>
+	[[include 'bootstrap/bs-header.html']]
+
+		<div class="container">
+			<br>
+			<div class="row justify-content-between">
+
+					<div class="col-md-6 ">
+						<div class="card text-center text-white  mb-3" id="total-orders">
+							<div class="card-header">
+								<h5 class="card-title">Gross Revenue</h5>
+							</div>
+							<div class="card-body">
+									
+									<h3 class="card-title">9999</h3>
+									
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="card text-center text-white  mb-3" id="orders-delivered">
+							<div class="card-header">
+								<h5 class="card-title">Week Revenue</h5>
+							</div>
+							<div class="card-body">
+								   
+									<h3 class="card-title">6</h3>
+					
+							</div>
+						</div>
+					</div>
+
+			
+
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-lg-5 mb-5">
+					<div class="card">
+
+						<div class="card-header">
+							<ul class="ps-0">
+								<li class=" text-center">
+									<h4 class="mb-0">Products</h4>
+                                    <h5>Thêm 1 nút xem thêm, hiển thị cỡ 5 tới 10 products</h5>
+								</li>
+								<li class="float-start">
+								
+
+					        <button class="btn btn-sm btn-info" type="submit">Edit Products</button>
+					  
+								</li>
+							</ul>
+						</div>
+
+						<div class="card-body">
+							<table class="table table-sm table-hover">
+                             
+								<tr>
+                                
+									<th>Product Code</th>
+									<th>Description</th>
+									<th>Quantity</th>
+								</tr>
+
+									<tr>
+                            [[for product in products:]]
+										<td>
+											[[=product.product_code ]]
+										</td>
+                                        <td>
+											[[=product.description ]]
+										</td>
+                                        <td>
+											[[=product.quantity ]]
+										</td>
+                                        
+							
+									</tr>
+									
+							[[pass]]	
+							</table>
+						</div>
+
+				
+					</div>
+
+				</div>
+
+				<div class="col-lg-7">
+					
+					<div class="card">
+
+                        <div class="card-header">
+							<ul class="ps-0">
+								<li class=" text-center">
+									<h4 class="mb-0">Invoices</h4>
+								</li>
+								<li class="float-start">
+								
+
+					        <button class="btn btn-sm btn-info" type="submit">Create Invoice</button>
+					  
+								</li>
+							</ul>
+						</div>
+
+						<div class="card-body">
+							<table class="table table-sm">
+								<tr>
+									<th>Name</th>
+									<th>Date Created</th>
+									<th> Details </th>
+								</tr>
+								[[import datetime]]
+								[[for invoice in invoices:]]
+								<tr>
+									<td>[[=invoice.name]]</td>
+									<td>[[=invoice.created_at]]</td>
+							
+									<td><a class="btn btn-sm btn-info" href="[[=URL('add',invoice.id)]]">Details</td>
+								</tr>
+								
+								[[pass]]	
+							</table>
+						</div> 
+
+						
+					</div>
+
+
+				</div>
+			
+				<footer class="col">
+					
+					
+<hr>
+	<div class="container row">
+		<div class="textbox text-center col-12">
+
+			<h3>Farm Fresh To You</h3>
+			<p>
+				268 Spring Haven Trail, Wayne, New Jersey<br>
+			
+			</p>
+		</div>
+	
+	</div>
+</footer>
+			
+			
+
+
+
+
+
+
+
+</body>
+
+</html>

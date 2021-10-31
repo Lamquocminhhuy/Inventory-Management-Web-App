@@ -14,7 +14,7 @@ APP_NAME = os.path.split(APP_FOLDER)[-1]
 # DB_FOLDER:    Sets the place where migration files will be created
 #               and is the store location for SQLite databases
 DB_FOLDER = required_folder(APP_FOLDER, "databases")
-DB_URI = "mysql://root:password@localhost/test?set_encoding =utf8mb4"
+DB_URI = "mysql://root:password@localhost/NLCN?set_encoding =utf8mb4"
 DB_POOL_SIZE = 1
 DB_MIGRATE = True
 DB_FAKE_MIGRATE = False  # maybe?
@@ -26,14 +26,14 @@ STATIC_FOLDER = required_folder(APP_FOLDER, "static")
 UPLOAD_FOLDER = required_folder(APP_FOLDER, "uploads")
 
 # send verification email on registration
-VERIFY_EMAIL = True
+VERIFY_EMAIL = False
 
 # account requires to be approved ?
 REQUIRES_APPROVAL = False
 
 # auto login after registration
 # requires False VERIFY_EMAIL & REQUIRES_APPROVAL 
-LOGIN_AFTER_REGISTRATION = False
+LOGIN_AFTER_REGISTRATION = True
 
 # ALLOWED_ACTIONS in API / default Forms:
 # ["all"] 

@@ -31,12 +31,14 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A, P
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from .models import get_user_email
-from py4web.utils.form import Form, FormStyleBulma
-from py4web.utils.grid import Grid, GridClassStyleBulma
+from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4, FormStyleDefault
+from py4web.utils.grid import Grid, GridClassStyleBulma, GridClassStyle
+
+import json
 
 
 @action('dashboard')
-@action.uses(db,auth.user, 'dashboard.html')
+@action.uses(db, auth.user, 'dashboard.html')
 def dashboard():
 
     return dict()
@@ -44,20 +46,21 @@ def dashboard():
 
 @action('index', method=["GET", "POST"])
 @action('index/<path:path>', method=["GET", "POST"])
-@action.uses(db,auth.user, 'index.html')
+@action.uses(db, auth.user, 'index.html')
 def index(path=None):
 
-    raw_categories = db.executesql("SELECT * FROM categories;") #Tuple
+    raw_categories = db.executesql("SELECT * FROM categories;")  # Tuple
     categories = dict((y, x) for x, y in raw_categories)
-    print(categories)
+    # print(categories)
     grid = Grid(
-        path,query = db.product.id > 0,
-        search_form=None,editable=True, deletable=True, details=False, create=True,
-        grid_class_style=GridClassStyleBulma,formstyle=FormStyleBulma,rows_per_page=4,
+        path, query=db.product.id > 0,
+        search_form=None, editable=True, deletable=True, details=False, create=True,
+        grid_class_style=GridClassStyleBulma, formstyle=FormStyleBulma, rows_per_page=4,
         search_queries=[
-        ['By Name', lambda val: db.product.name.contains(val)],
-        ['By Quantity', lambda val: db.product.quantity == val],
-        ['By Category',  lambda val: db.product.category == categories[str(val)]],
+            ['By Name', lambda val: db.product.name.contains(val)],
+            ['By Quantity', lambda val: db.product.quantity == val],
+            ['By Category', lambda val: db.product.category ==
+                categories[str(val)]],
         ]
     )
     #Count total product
@@ -68,68 +71,93 @@ def index(path=None):
 
 @action('category', method=["GET", "POST"])
 @action('category/<path:path>', method=["GET", "POST"])
-@action.uses(db,auth.user, 'category.html')
+@action.uses(db, auth.user, 'category.html')
 def category(path=None):
     # Display data by hand :v
     # rows = db(db.product.created_by == get_user_email()).select()
     grid = Grid(
         path,
-        query = db.categories.id > 0,
+        query=db.categories.id > 0,
         search_form=None,
         editable=True, deletable=True, details=False, create=True,
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
-        search_queries=[['By Name', lambda val: db.categories.name.contains(val)]]
+        search_queries=[
+            ['By Name', lambda val: db.categories.name.contains(val)]]
 
 
     )
     #Count total product
     total = db(db.categories.id > 0).select()
 
-
-
     return dict(grid=grid, total=len(total))
+
 
 @action('user', method=["GET", "POST"])
 @action('user/<path:path>', method=["GET", "POST"])
-@action.uses(db,auth.user, 'user.html')
+@action.uses(db, auth.user, 'user.html')
 def user(path=None):
-   
+
     grid = Grid(
         path,
-        query = db.auth_user.id > 0,
+        query=db.auth_user.id > 0,
         search_form=None,
         editable=True, deletable=True, details=False, create=True,
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
-        search_queries=[['By Username', lambda val: db.auth_user.username.contains(val)],['By Email', lambda val: db.auth_user.email.contains(val)]],
+        search_queries=[['By Username', lambda val: db.auth_user.username.contains(
+            val)], ['By Email', lambda val: db.auth_user.email.contains(val)]],
 
 
     )
     return dict(grid=grid)
 
 
-
-@action('add', method=["GET", "POST"])
+@action('add/<invoice_id:int>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'add.html')
-def add():
+def add(invoice_id=None):
     # Using html form
-    # if request.method == "GET":
-    #     return dict()
-    # else:
-    #     print("User", get_user_email(), "Product", request.params.get("name"))
-    #     db.product.insert(name = request.params.get("name"))
-    #     redirect(URL('add'))
+    if request.method == "GET":
+        total = 0
+        total_product = []
+        invoice = db(db.input_invoice.id == invoice_id).select()
+        invoice_details = db(
+            db.input_invoice.id == db.input_invoice_details.input_invoice_id == invoice_id).select()
+        products = db(db.product.id > 0).select()
 
+        for i in invoice_details:
+            total += int(i.total_price)
+            total_product.append(i.product_id)
+
+        return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
+    else:
+        print("User", get_user_email(), "Product", request.params.get("name"))
+        # db.input_invoice.insert(name = request.params.get("name"))
+        redirect(URL('add', invoice_id))
+
+
+@action('add_post/<invoice_id:int>', method=["GET", "POST"])
+@action.uses(db, auth.user, 'add.html')
+def add_post(invoice_id=None):
+    assert invoice_id is not None
+
+    db.input_invoice_details.insert(
+        input_invoice_id=invoice_id,
+        product_id=request.params.get("productId"),
+        quantity=int(request.params.get("quantity")),
+        unit_price=int(request.params.get("unit_price"))
+    )
+
+    redirect(URL('add', invoice_id))
     # Using py4web form
     # Insert form
-    form = Form(db.product, csrf_session=session, formstyle=FormStyleBulma)
-    if form.accepted:
-        
-        redirect(URL('index'))
+    # form = Form(db.product, csrf_session=session, formstyle=FormStyleBulma)
+    # if form.accepted:
+
+    #     redirect(URL('index'))
 
     # If this is a Get request, or this is a POST but not accepted request
-    return dict(form=form)
+    # return dict(form=form)
 
 
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
@@ -147,9 +175,29 @@ def add():
 #     return dict(form=form)
 
 
-# @action('delete_product/<product_id:int>')
-# @action.uses(db, session, auth.user)
-# def delete(product_id=None):
-#     assert product_id is not None
-#     db(db.product.id == product_id).delete()
-#     redirect(URL('index'))
+@action('delete_product/<input_invoice_details_id:int>/<invoice_id:int>')
+@action.uses(db, session, auth.user)
+def delete(input_invoice_details_id, invoice_id=None):
+    assert input_invoice_details_id, invoice_id is not None
+    db(db.input_invoice_details.id == input_invoice_details_id).delete()
+    # print(input_invoice_details_id,invoice_id)
+    redirect(URL('add', invoice_id))
+
+
+@action('admin', method=["GET", "POST"])
+@action.uses(db, auth.user, 'admin.html')
+def admin():
+    if request.method == 'GET':
+        products = db(db.product.id > 0).select()
+        invoices = db(db.input_invoice.id > 0).select()
+        return dict(products=products, invoices=invoices)
+
+
+@action('test', method=["GET", "POST"])
+@action.uses(db, auth.user, 'test.html')
+def test():
+    if request.method == 'GET':
+        return dict()
+    else:
+        products = request.json
+        redirect(URL('index'))
