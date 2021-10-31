@@ -130,8 +130,34 @@ ul,li{
 								<li class="float-start">
 								
 
-					        <button class="btn btn-sm btn-info" type="submit">Create Invoice</button>
-					  
+					       
+							<button class="btn btn-success btn-sm btn-block" data-bs-toggle="modal"
+							data-bs-target="#InvoiceModal">Create Invoice</button>
+							<div class="modal" id="InvoiceModal" >
+								<div class="modal-dialog">
+								  <div class="modal-content">
+									<div class="modal-header">
+									  <h4 class="modal-title">Create Invoice</h4>
+									  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+							
+									
+							   
+									<form class="row g-3" action="[[=URL('create_invoice')]]" method="POST">
+										
+								
+										
+										<div class="col-md-12">
+										  <label class="form-label">Invoice Name</label>
+									 
+										  <input class="form-control" type="text" name="name" required>
+										</div>
+										<div class="col-12">
+             
+											<button type="submit" class="btn btn-primary">Create</button>
+										</div>
+									</form>
 								</li>
 							</ul>
 						</div>
@@ -149,7 +175,7 @@ ul,li{
 									<td>[[=invoice.name]]</td>
 									<td>[[=invoice.created_at]]</td>
 							
-									<td><a class="btn btn-sm btn-info" href="[[=URL('add',invoice.id)]]">Details</td>
+									<td><a class="btn btn-sm btn-info" href="[[=URL('get_invoice',invoice.id)]]">Details</td>
 								</tr>
 								
 								[[pass]]	

@@ -26,39 +26,7 @@
 
 <body>
     
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-          <ul class="navbar-nav ms-2">
-            <li class="nav-item active">
-              <a class="nav-link fs-5 fw-bold" href="[[=URL('admin')]]">Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link fs-5 " href="[[=URL('index')]]">Products</a>
-            </li>
-          </ul>
-
-          <ul class="navbar-nav fs-6 justify-content-center ms-2 me-5">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="[[=URL('auth/profile')]]" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                [[=globals().get('user',{}).get('email')]]
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-               
-                <li><a class="dropdown-item" href="[[=URL('auth/profile')]]">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="[[=URL('auth/change_password')]]">Change Password</a></li>
-                <li><a class="dropdown-item" href="[[=URL('auth/logout')]]">Logout</a></li>
-         
-              </ul>
-            </li>
-           
-          </ul>
-        </div>
-      </div>
-      </nav>
+  [[include 'bootstrap/bs-header.html']]
 
         <div class="container-fluid">
             <br>
@@ -69,12 +37,14 @@
                    
                         [[for i in invoice:]]
                      
-                            <h5>Invoice: [[=i.name]]
-                            </h5>
+                            <h5>Invoice: [[=i.name]]</h5>
+                            <p>Date Created: [[=i.created_at]]</p>
                             
                                     <hr>
                                     <button class="btn btn-info  btn-sm btn-block mb-3" data-bs-toggle="modal"
                                         data-bs-target="#myModal">Export</button>
+                                    <button class="btn btn-warning  btn-sm btn-block mb-3" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal">Delete</button>
                                     <button class="btn btn-success btn-sm btn-block" data-bs-toggle="modal"
                                         data-bs-target="#OrderModal">Add Invoice Product</button>
                     </div>
@@ -152,7 +122,7 @@
 
         
    
-          <form class="row g-3" action="[[=URL('add_post',i.id)]]" method="POST">
+          <form class="row g-3" action="[[=URL('post_invoice',i.id)]]" method="POST">
             
             <input type="hidden"  name="invoice_id" value="[[=i.id]]">
             
@@ -171,6 +141,8 @@
                     
                   
               </select>
+            
+            
             </div>
           
    
@@ -196,7 +168,34 @@
     </div>
   </div>
   
+                        
+  <div class="modal" id="deleteModal" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Delete this invoice</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
 
+        
+   
+          <form class="row g-3" action="[[=URL('delete_invoice')]]" method="POST">
+            
+            <input type="hidden"  name="id" value="[[=i.id]]">
+            
+           
+    
+            <div class="col-12">
+             
+            <button type="submit" class="btn btn-danger">Save</button>
+            </div>
+          </form>
+    
+        </div>    
+      </div>
+    </div>
+  </div>
 
 
                             <div class="col-md">

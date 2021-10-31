@@ -31,27 +31,34 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A, P
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from .models import get_user_email
-from py4web.utils.form import Form, FormStyleBulma, FormStyleBootstrap4, FormStyleDefault
+from py4web.utils.form import Form, FormStyleBulma
 from py4web.utils.grid import Grid, GridClassStyleBulma, GridClassStyle
-
 import json
 
 
 @action('dashboard')
 @action.uses(db, auth.user, 'dashboard.html')
 def dashboard():
-
     return dict()
 
 
-@action('index', method=["GET", "POST"])
-@action('index/<path:path>', method=["GET", "POST"])
-@action.uses(db, auth.user, 'index.html')
-def index(path=None):
+@action('admin', method=["GET", "POST"])
+@action.uses(db, auth.user, 'admin.html')
+def admin():
+    if request.method == 'GET':
+        products = db(db.product.id > 0).select()
+        invoices = db(db.input_invoice.id > 0).select()
+        return dict(products=products, invoices=invoices)
 
-    raw_categories = db.executesql("SELECT * FROM categories;")  # Tuple
+
+@action('product', method=["GET", "POST"])
+@action('product/<path:path>', method=["GET", "POST"])
+@action.uses(db, auth.user, 'product.html')
+def product(path=None):
+
+    raw_categories = db.executesql("SELECT * FROM categories;")
     categories = dict((y, x) for x, y in raw_categories)
-    # print(categories)
+
     grid = Grid(
         path, query=db.product.id > 0,
         search_form=None, editable=True, deletable=True, details=False, create=True,
@@ -60,9 +67,8 @@ def index(path=None):
             ['By Name', lambda val: db.product.name.contains(val)],
             ['By Quantity', lambda val: db.product.quantity == val],
             ['By Category', lambda val: db.product.category ==
-                categories[str(val)]],
-        ]
-    )
+                categories[str(val)]]
+        ])
     #Count total product
     total = db(db.product.id > 0).select()
     outOfStock = db(db.product.quantity == 0).select()
@@ -73,8 +79,7 @@ def index(path=None):
 @action('category/<path:path>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'category.html')
 def category(path=None):
-    # Display data by hand :v
-    # rows = db(db.product.created_by == get_user_email()).select()
+
     grid = Grid(
         path,
         query=db.categories.id > 0,
@@ -83,10 +88,7 @@ def category(path=None):
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
         search_queries=[
-            ['By Name', lambda val: db.categories.name.contains(val)]]
-
-
-    )
+            ['By Name', lambda val: db.categories.name.contains(val)]])
     #Count total product
     total = db(db.categories.id > 0).select()
 
@@ -105,24 +107,26 @@ def user(path=None):
         editable=True, deletable=True, details=False, create=True,
         grid_class_style=GridClassStyleBulma,
         formstyle=FormStyleBulma,
-        search_queries=[['By Username', lambda val: db.auth_user.username.contains(
-            val)], ['By Email', lambda val: db.auth_user.email.contains(val)]],
-
-
-    )
+        search_queries=[
+            ['By Username', lambda val: db.auth_user.username.contains(val)],
+            ['By Email', lambda val: db.auth_user.email.contains(val)]])
     return dict(grid=grid)
 
 
-@action('add/<invoice_id:int>', method=["GET", "POST"])
-@action.uses(db, auth.user, 'add.html')
-def add(invoice_id=None):
-    # Using html form
+@action('get_invoice/<invoice_id:int>', method=["GET"])
+@action.uses(db, auth.user, 'invoice.html')
+def get_invoice(invoice_id=None):
+
     if request.method == "GET":
         total = 0
+
         total_product = []
+
         invoice = db(db.input_invoice.id == invoice_id).select()
+
         invoice_details = db(
             db.input_invoice.id == db.input_invoice_details.input_invoice_id == invoice_id).select()
+
         products = db(db.product.id > 0).select()
 
         for i in invoice_details:
@@ -130,15 +134,11 @@ def add(invoice_id=None):
             total_product.append(i.product_id)
 
         return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
-    else:
-        print("User", get_user_email(), "Product", request.params.get("name"))
-        # db.input_invoice.insert(name = request.params.get("name"))
-        redirect(URL('add', invoice_id))
 
 
-@action('add_post/<invoice_id:int>', method=["GET", "POST"])
+@action('post_invoice/<invoice_id:int>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'add.html')
-def add_post(invoice_id=None):
+def post_invoice(invoice_id=None):
     assert invoice_id is not None
 
     db.input_invoice_details.insert(
@@ -148,16 +148,50 @@ def add_post(invoice_id=None):
         unit_price=int(request.params.get("unit_price"))
     )
 
+    redirect(URL('get_invoice', invoice_id))
+
+
+@action('create_invoice', method=["POST"])
+@action.uses(db, auth.user)
+def create_invoice():
+    if request.params.get("name"):
+
+        db.input_invoice.insert(name=request.params.get("name"))
+        invoice = db(db.input_invoice.name ==
+                     request.params.get("name")).select()
+        invoice_id = invoice[0].id
+
     redirect(URL('add', invoice_id))
-    # Using py4web form
-    # Insert form
-    # form = Form(db.product, csrf_session=session, formstyle=FormStyleBulma)
-    # if form.accepted:
 
-    #     redirect(URL('index'))
 
-    # If this is a Get request, or this is a POST but not accepted request
-    # return dict(form=form)
+@action('delete_invoice', method=["POST"])
+@action.uses(db, auth.user)
+def delete_invoice():
+    if request.params.get("id"):
+
+        db(db.input_invoice.id == request.params.get("id")).delete()
+
+    redirect(URL('admin'))
+
+
+@action('delete_product/<input_invoice_details_id:int>/<invoice_id:int>')
+@action.uses(db, session, auth.user)
+def delete(input_invoice_details_id, invoice_id=None):
+    assert input_invoice_details_id, invoice_id is not None
+    db(db.input_invoice_details.id == input_invoice_details_id).delete()
+
+    redirect(URL('get_invoice', invoice_id))
+
+
+@action('test', method=["GET", "POST"])
+@action.uses(db, auth.user, 'test.html')
+def test():
+    if request.method == 'GET':
+        return dict()
+    else:
+        products = request.json
+
+        redirect(URL('index'))
 
 
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
@@ -173,31 +207,3 @@ def add_post(invoice_id=None):
 #     if form.accepted:
 #         redirect(URL('index'))
 #     return dict(form=form)
-
-
-@action('delete_product/<input_invoice_details_id:int>/<invoice_id:int>')
-@action.uses(db, session, auth.user)
-def delete(input_invoice_details_id, invoice_id=None):
-    assert input_invoice_details_id, invoice_id is not None
-    db(db.input_invoice_details.id == input_invoice_details_id).delete()
-    # print(input_invoice_details_id,invoice_id)
-    redirect(URL('add', invoice_id))
-
-
-@action('admin', method=["GET", "POST"])
-@action.uses(db, auth.user, 'admin.html')
-def admin():
-    if request.method == 'GET':
-        products = db(db.product.id > 0).select()
-        invoices = db(db.input_invoice.id > 0).select()
-        return dict(products=products, invoices=invoices)
-
-
-@action('test', method=["GET", "POST"])
-@action.uses(db, auth.user, 'test.html')
-def test():
-    if request.method == 'GET':
-        return dict()
-    else:
-        products = request.json
-        redirect(URL('index'))
