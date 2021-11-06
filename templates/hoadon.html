@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/hoadon.css">
+    <title>BILL</title>
+</head>
+<body>
+    <div class="container" style="border: 1px solid;">
+        <div class="header">
+            <div class="company">
+                <div class="left">
+                    <h2>CIT TECH SHOP</h2>
+       
+                </div>
+                [[for data in invoice:]]
+                <div class="right">
+                    <h1>INVOICE</h1>
+                    <p class ="billName">[[=data.name]]</p>
+                </div>
+            </div>
+            <div class="customer text">
+           
+
+                <p>Customer Name: [[=data.customer_name]]</p>
+                <p>Address: [[=data.customer_address]]</p>
+                [[pass]]
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="product">
+                <table>
+                    <!-- Render ra ne -->
+                 
+                    <tr>
+                        <th class = "one">#</th>
+                        <th class = "thirteen">PRODUCT</th>
+                        <th class = "two">QUANTITY</th>
+                        <th class = "four">$ / UNIT</th>
+                        <th class = "five">NET PRICE</th>
+                    </tr>
+                    [[total_products = 0]]
+                    [[index = 0 ]]
+                    [[for data in details:]]
+                        [[index += 1]]
+                        [[total_products += data.quantity]]
+                    <tr>
+                        <th class = "one">[[=index]]</th>
+                        <th class = "thirteen">[[=data.product_id]]</th>
+                        <th class = "two">[[=data.quantity]]</th>
+                        <th class = "four">[[=data.unit_price]]$</th>
+                        
+                      
+                        <th class = "five">[[=data.total_price]] $</th>
+                        
+                    </tr>
+                    [[pass]]
+                    <tr>
+                        
+                        <td colspan="2">Subtotal</td>
+                        <td>[[=total_products]]</td>
+                        <td></td>
+                        <td>[[=total]] $</td>
+                    </tr>
+                    <tr>
+                        
+                        <td colspan="2">Tax (10%)</td>
+                        <td></td>
+                        <td></td>
+                        <td>[[= ((int(total) * 10)/100) ]]$</td>
+                    </tr>
+                    <tr>
+                        
+                        <td colspan="2">Total</td>
+                        <td></td>
+                        <td></td>
+                        <td>[[= int(total) + ((int(total) * 10)/100)]] $</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="result text">
+            
+            </div>
+        </div>
+
+        <div class="footer">
+            [[for i in invoice:]]
+            <div class="left">
+                <br>
+                <p>BUYER</p>
+                <p id="copany-name">[[=i.customer_name]]</p>
+            </div>
+            <div class="right">
+          
+          
+                <p id ="date"> [[= i.created_at[8:10] ]] - [[= i.created_at[5:7] ]] - [[= i.created_at[0:4] ]]</p>
+                <p>SELLER</p>
+                <p id="copany-name"> [[=globals().get('user',{}).get('last_name')]] [[=globals().get('user',{}).get('first_name')]]</p>
+                [[pass]]
+            </div>
+        </div>
+    </div>
+   
+    <a href="javascript:generatePDF()" id ="download">Print</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+    <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <script src="../static/js/app.js"></script>
+</body>
+</html>

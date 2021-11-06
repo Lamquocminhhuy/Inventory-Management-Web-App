@@ -34,7 +34,6 @@ db.define_table(
           filter_out=lambda categories: categories.name if categories else ''),
     Field('product_code'),
     Field('description'),
-    Field('quantity', 'integer', default=0),
     Field('unit'),
     Field('created_by', default=get_user_email),
     Field('created_at', default=get_time),
@@ -45,9 +44,12 @@ db.product.created_by.readable = db.product.created_by.writable = False
 db.product.created_at.readable = db.product.created_at.writable = False
 db.product.categories_id.requires = IS_IN_DB(db, db.categories.id, '%(name)s')
 #------------------------------------------------------------------------------------------------#
+
 db.define_table(
     'input_invoice',
     Field('name', 'text'),
+    Field('customer_name','text'),
+    Field('customer_address','text'),
     Field('created_at', default=get_time)
 )
 

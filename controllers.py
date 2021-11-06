@@ -42,9 +42,9 @@ def dashboard():
     return dict()
 
 
-@action('admin', method=["GET", "POST"])
-@action.uses(db, auth.user, 'admin.html')
-def admin():
+@action('index', method=["GET", "POST"])
+@action.uses(db, auth.user, 'index.html')
+def index():
     if request.method == 'GET':
         products = db(db.product.id > 0).select()
         invoices = db(db.input_invoice.id > 0).select()
@@ -58,21 +58,18 @@ def product(path=None):
 
     raw_categories = db.executesql("SELECT * FROM categories;")
     categories = dict((y, x) for x, y in raw_categories)
-
+    print(categories)
     grid = Grid(
         path, query=db.product.id > 0,
         search_form=None, editable=True, deletable=True, details=False, create=True,
         grid_class_style=GridClassStyleBulma, formstyle=FormStyleBulma, rows_per_page=4,
         search_queries=[
-            ['By Name', lambda val: db.product.name.contains(val)],
-            ['By Quantity', lambda val: db.product.quantity == val],
-            ['By Category', lambda val: db.product.category ==
-                categories[str(val)]]
+            ['By Code', lambda val: db.product.product_code.contains(val)],
+            ['By Category', lambda val: db.product.categories_id == categories[str(val)]]
         ])
     #Count total product
     total = db(db.product.id > 0).select()
-    outOfStock = db(db.product.quantity == 0).select()
-    return dict(grid=grid, total=len(total), outOfStock=len(outOfStock))
+    return dict(grid=grid, total=len(total))
 
 
 @action('category', method=["GET", "POST"])
@@ -119,7 +116,6 @@ def get_invoice(invoice_id=None):
 
     if request.method == "GET":
         total = 0
-
         total_product = []
 
         invoice = db(db.input_invoice.id == invoice_id).select()
@@ -147,6 +143,8 @@ def post_invoice(invoice_id=None):
         quantity=int(request.params.get("quantity")),
         unit_price=int(request.params.get("unit_price"))
     )
+   
+  
 
     redirect(URL('get_invoice', invoice_id))
 
@@ -161,7 +159,7 @@ def create_invoice():
                      request.params.get("name")).select()
         invoice_id = invoice[0].id
 
-    redirect(URL('add', invoice_id))
+    redirect(URL('get_invoice', invoice_id))
 
 
 @action('delete_invoice', method=["POST"])
@@ -171,7 +169,7 @@ def delete_invoice():
 
         db(db.input_invoice.id == request.params.get("id")).delete()
 
-    redirect(URL('admin'))
+    redirect(URL('index'))
 
 
 @action('delete_product/<input_invoice_details_id:int>/<invoice_id:int>')
@@ -193,13 +191,40 @@ def test():
 
         redirect(URL('index'))
 
+@action('print-invoice/<invoice_id:int>', method=["GET"])
+@action.uses(db, auth.user, 'hoadon.html')
+def invoiceJson(invoice_id):
+    total = 0
+    total_product = []
+    invoice = db(db.input_invoice.id == invoice_id).select()
+    invoice_details = db(db.input_invoice.id == db.input_invoice_details.input_invoice_id ==  invoice_id).select()
+    for i in invoice_details:
+        total += int(i.total_price)
+        total_product.append(i.product_id)
+
+  
+   
+    # return dict json 
+    products = db(db.product.id > 0).select()
+    return dict(invoice=invoice, details = invoice_details, total = total, total_product = len(total_product), products = products)
+
+
+@action('customer-infor/<invoice_id:int>', method=["POST"])
+@action.uses(db, auth.user)
+def customer(invoice_id = None):
+    assert invoice_id is not None
+    invoice = db(db.input_invoice.id == invoice_id)
+    invoice.update(customer_name=request.params.get("fullname"),customer_address=request.params.get("address"))
+    
+
+    redirect(URL('get_invoice', invoice_id))
 
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'edit.html')
 # def edit(product_id=None):
 #     assert product_id is not None
 #     # p = db(db.product.id == product_id).select()
-#     p = db.product[product_id]
+#        p = db.product[product_id]
 #     if p is None:
 #         # Nothing found to be edited!
 #         redirect(URL('index'))

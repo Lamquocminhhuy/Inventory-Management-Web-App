@@ -73,12 +73,12 @@ ul,li{
 							<ul class="ps-0">
 								<li class=" text-center">
 									<h4 class="mb-0">Products</h4>
-                                    <h5>Thêm 1 nút xem thêm, hiển thị cỡ 5 tới 10 products</h5>
+                             
 								</li>
 								<li class="float-start">
 								
 
-					        <button class="btn btn-sm btn-info" type="submit">Edit Products</button>
+					        <a class="btn btn-sm btn-info" href="[[=URL('product')]]">Edit Products</a>
 					  
 								</li>
 							</ul>
@@ -91,7 +91,7 @@ ul,li{
                                 
 									<th>Product Code</th>
 									<th>Description</th>
-									<th>Quantity</th>
+					
 								</tr>
 
 									<tr>
@@ -102,9 +102,7 @@ ul,li{
                                         <td>
 											[[=product.description ]]
 										</td>
-                                        <td>
-											[[=product.quantity ]]
-										</td>
+                                     
                                         
 							
 									</tr>

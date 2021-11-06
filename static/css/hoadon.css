@@ -1,0 +1,184 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 1.6rem;
+    font-family: OpenSans-Semibold;
+}
+
+html{
+    font-size: 10px;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:center;
+}
+
+.container{
+    margin: 0 auto;
+    padding: 2rem;
+    width: 50%;
+    /* min-height: 50vh; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container .header{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container .header .company{
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+
+}
+
+.container .header .company .left{
+    padding-top: 0.5rem;
+    flex:1;
+}
+
+.container .header .company .left h2{
+    text-align: center;
+    font-weight: bold;
+}
+
+.container .header .company .left p{
+    margin-top: 0.2rem;
+    font-weight: bold;
+}
+
+
+.container .header .company .right{
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container .header .company .right h1,p{
+    font-weight: bold;
+}
+
+.container .header .company .right p{
+    margin-top: 0.2rem;
+}
+
+.container .text{
+    width: 100%;
+    padding: 0.5rem 0;
+    padding-right: 2rem;
+}
+
+.container .text p{
+    margin-bottom: 0.5rem;
+    width: 100%;
+    display: flex;
+}
+
+.container .content{
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container .content .product{
+    width: 100%;
+}
+
+.container .content .product table{
+    width: 100%;
+    border-collapse: collapse;
+    font-weight: bold;
+}
+
+.container .content .product table .one{
+    width: 4%;
+}
+
+.container .content .product table .two{
+    width: 8%;
+}
+
+.container .content .product table .four{
+    width: 16%;
+}
+
+.container .content .product table .five{
+    width: 20%;
+}
+
+
+.container .content .product table .thirteen{
+    width: 52%;
+}
+
+.container .content .product table .four{
+    width: 20%;
+}
+
+
+.container .content .product td,th{
+    padding: 0.4rem 0.8rem;
+    border: 0.1rem solid black;
+    text-align: center;
+}
+
+.container .content .result{
+    margin-top: 1rem;
+}
+
+.container .content .result p{
+    font-style: italic;
+    font-weight: normal;
+}
+
+.container .footer{
+    display: flex;
+}
+
+.container .footer .left{
+    flex: 1;
+}
+
+.container .footer .right{
+    flex: 1;
+}
+
+.container .footer .right #date{
+    font-style: italic;
+}
+
+.container .footer p{
+    text-align: center;
+    font-weight: normal;
+}
+
+.container .footer #copany-name{
+    margin-top: 10rem;
+}
+
+#download{
+    margin-top: 3rem;
+    padding: 0.5rem 1rem;
+    background-color: rgb(65, 65, 65);
+    transition: 0.3s ease-in-out;
+    color: white;
+    border-radius: 0.5rem;
+    text-decoration: none;
+}
+
+#download:hover{
+    box-shadow: 0.2rem 0.2rem 0.4rem rgb(50, 50, 50);
+    transform: translate(0.1rem, 0.1rem);
+}

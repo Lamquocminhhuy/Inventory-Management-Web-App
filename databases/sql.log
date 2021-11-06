@@ -219,3 +219,87 @@ UPDATE `input_invoice_details` SET `total_price`=`total_price__tmp`;
 success!
 ALTER TABLE `input_invoice_details` DROP COLUMN `total_price__tmp`;
 success!
+timestamp: 2021-11-02T16:05:09.291939
+ALTER TABLE `product` DROP COLUMN `quantity`;
+success!
+timestamp: 2021-11-04T18:50:49.180307
+ALTER TABLE `input_invoice` ADD `customer_name` LONGTEXT;
+success!
+success!
+timestamp: 2021-11-04T18:58:33.421360
+ALTER TABLE `input_invoice` ADD `customer_address` LONGTEXT;
+success!
+success!
+timestamp: 2021-11-04T23:29:03.388996
+ALTER TABLE `input_invoice_details` ADD `product_description` INT  , ADD INDEX `product_description__idx` (`product_description`), ADD FOREIGN KEY (`product_description`) REFERENCES `product` (`id`) ON DELETE CASCADE;
+success!
+success!
+timestamp: 2021-11-04T23:31:25.889683
+ALTER TABLE `input_invoice_details` DROP COLUMN `product_description`;
+timestamp: 2021-11-04T23:34:29.764479
+ALTER TABLE `input_invoice_details` DROP COLUMN `product_description`;
+timestamp: 2021-11-04T23:36:40.632887
+ALTER TABLE `input_invoice_details` DROP COLUMN `product_description`;
+timestamp: 2021-11-04T23:40:42.454567
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `username` VARCHAR(512) UNIQUE,
+    `email` VARCHAR(512) UNIQUE,
+    `password` VARCHAR(512),
+    `first_name` VARCHAR(512),
+    `last_name` VARCHAR(512),
+    `sso_id` VARCHAR(512),
+    `action_token` VARCHAR(512),
+    `last_password_change` DATETIME,
+    `past_passwords_hash` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-04T23:40:42.512427
+CREATE TABLE `auth_user_tag_groups`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `path` VARCHAR(512),
+    `record_id` INT  , INDEX `record_id__idx` (`record_id`), FOREIGN KEY (`record_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-04T23:40:42.558377
+CREATE TABLE `categories`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `name` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-04T23:40:42.602087
+CREATE TABLE `product`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `categories_id` INT  , INDEX `categories_id__idx` (`categories_id`), FOREIGN KEY (`categories_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+    `product_code` VARCHAR(512),
+    `description` VARCHAR(512),
+    `unit` VARCHAR(512),
+    `created_by` VARCHAR(512),
+    `created_at` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-04T23:40:42.642994
+CREATE TABLE `input_invoice`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `name` LONGTEXT,
+    `customer_name` LONGTEXT,
+    `customer_address` LONGTEXT,
+    `created_at` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-04T23:40:42.673605
+CREATE TABLE `input_invoice_details`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `input_invoice_id` INT  , INDEX `input_invoice_id__idx` (`input_invoice_id`), FOREIGN KEY (`input_invoice_id`) REFERENCES `input_invoice` (`id`) ON DELETE CASCADE,
+    `product_id` INT  , INDEX `product_id__idx` (`product_id`), FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+    `quantity` INTEGER,
+    `unit_price` INTEGER,
+    `total_price` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
