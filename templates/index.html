@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
 [[include 'bootstrap/head.html']] 
@@ -66,7 +66,7 @@ ul,li{
 			</div>
 			<br>
 			<div class="row">
-				<div class="col-lg-5 mb-5">
+				<div class="col-lg-4 mb-5">
 					<div class="card">
 
 						<div class="card-header">
@@ -88,14 +88,19 @@ ul,li{
 							<table class="table table-sm table-hover">
                              
 								<tr>
-                                
+									<th>#</th>
 									<th>Product Code</th>
 									<th>Description</th>
 					
 								</tr>
 
 									<tr>
+							[[x = 0]]
                             [[for product in products:]]
+							[[x += 1]]
+										<td>
+											[[=x]]
+										</td>
 										<td>
 											[[=product.product_code ]]
 										</td>
@@ -116,14 +121,14 @@ ul,li{
 
 				</div>
 
-				<div class="col-lg-7">
+				<div class="col-lg-4 mb-5">
 					
 					<div class="card">
 
                         <div class="card-header">
 							<ul class="ps-0">
 								<li class=" text-center">
-									<h4 class="mb-0">Invoices</h4>
+									<h4 class="mb-0">Export Invoices</h4>
 								</li>
 								<li class="float-start">
 								
@@ -135,7 +140,7 @@ ul,li{
 								<div class="modal-dialog">
 								  <div class="modal-content">
 									<div class="modal-header">
-									  <h4 class="modal-title">Create Invoice</h4>
+									  <h4 class="modal-title">Create Export Invoice</h4>
 									  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 									</div>
 									<div class="modal-body">
@@ -163,13 +168,88 @@ ul,li{
 						<div class="card-body">
 							<table class="table table-sm">
 								<tr>
+									<th>#</th>
 									<th>Name</th>
 									<th>Date Created</th>
 									<th> Details </th>
 								</tr>
-								[[import datetime]]
+								[[i = 0]]
 								[[for invoice in invoices:]]
+								[[i += 1]]
 								<tr>
+									<td>[[=i]]</td>
+									<td>[[=invoice.name]]</td>
+									<td>[[=invoice.created_at]]</td>
+							
+									<td><a class="btn btn-sm btn-info" href="[[=URL('get_invoice',invoice.id)]]">Details</td>
+								</tr>
+								
+								[[pass]]	
+							</table>
+						</div> 
+
+						
+					</div>
+
+
+				</div>
+				<div class="col-lg-4">
+					
+					<div class="card">
+
+                        <div class="card-header">
+							<ul class="ps-0">
+								<li class=" text-center">
+									<h4 class="mb-0">Import Invoices</h4>
+								</li>
+								<li class="float-start">
+								
+
+					       
+							<button class="btn btn-warning  btn-sm btn-block" data-bs-toggle="modal"
+							data-bs-target="#InvoiceModal2">Create Invoice</button>
+							<div class="modal" id="InvoiceModal2" >
+								<div class="modal-dialog">
+								  <div class="modal-content">
+									<div class="modal-header">
+									  <h4 class="modal-title">Create Import Invoice</h4>
+									  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+							
+									
+							   
+									<form class="row g-3" action="[[=URL('create_invoice')]]" method="POST">
+										
+								
+										
+										<div class="col-md-12">
+										  <label class="form-label">Invoice Name</label>
+									 
+										  <input class="form-control" type="text" name="name" required>
+										</div>
+										<div class="col-12">
+             
+											<button type="submit" class="btn btn-primary">Create</button>
+										</div>
+									</form>
+								</li>
+							</ul>
+						</div>
+
+						<div class="card-body">
+							<table class="table table-sm">
+								<tr>
+									<th>#</th>
+									<th>Name</th>
+									<th>Date Created</th>
+									<th> Details </th>
+								</tr>
+								[[j = 0]]
+								[[for invoice in invoices:]]
+								[[j += 1]]
+								<tr>
+									<td>[[=j]]</td>
 									<td>[[=invoice.name]]</td>
 									<td>[[=invoice.created_at]]</td>
 							

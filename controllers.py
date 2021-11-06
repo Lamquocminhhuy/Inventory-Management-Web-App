@@ -219,6 +219,18 @@ def customer(invoice_id = None):
 
     redirect(URL('get_invoice', invoice_id))
 
+
+@action('statistic', method=["GET"])
+@action.uses(db, auth.user)
+def statistic():
+    
+    a = '2021-11-05'
+    b = '2021-11-05'
+    # return dict json 
+
+    products = db((db.input_invoice.id == db.input_invoice_details.id) & (db.input_invoice.created_at >= a and db.input_invoice.created_at <= b)).select()
+   
+    return dict(products=products)
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'edit.html')
 # def edit(product_id=None):

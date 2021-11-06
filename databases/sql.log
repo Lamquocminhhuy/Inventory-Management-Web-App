@@ -303,3 +303,24 @@ CREATE TABLE `input_invoice_details`(
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 success!
+timestamp: 2021-11-06T17:20:03.121571
+CREATE TABLE `output_invoice`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `name` LONGTEXT,
+    `customer_name` LONGTEXT,
+    `customer_address` LONGTEXT,
+    `created_at` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2021-11-06T17:20:03.171088
+CREATE TABLE `output_invoice_details`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `output_invoice_id` INT  , INDEX `output_invoice_id__idx` (`output_invoice_id`), FOREIGN KEY (`output_invoice_id`) REFERENCES `output_invoice` (`id`) ON DELETE CASCADE,
+    `product_id` INT  , INDEX `product_id__idx` (`product_id`), FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+    `quantity` INTEGER,
+    `unit_price` INTEGER,
+    `total_price` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!

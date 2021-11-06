@@ -108,7 +108,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Place Order</h4>
+          <h4 class="modal-title">Add Product</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -229,15 +229,20 @@
                         <table class="table table-sm">
 
                             <tr>
+                                <th>#</th>
                                 <th>Product Code</th>
                                 <th>Quantity</th>
                                 <th>Unit Price</th>
                                 <th>Total Price</th>
                                 <th>Edit</th>
                             </tr>
+                            [[index = 0]]
                             [[for invoice in invoice_details:]]
+                            [[index +=1]]
                                 <tr>
-                             
+                                  <td>
+                                    [[=index]]
+                                  </td>
                                     <td>
                                         [[=invoice.product_id]]
                                     </td>

@@ -69,7 +69,26 @@ db.input_invoice_details.input_invoice_id.requires = IS_IN_DB(
     db, db.input_invoice.id, '%(name)s')
 db.input_invoice_details.product_id.requires = IS_IN_DB(
     db, db.product.id, '%(product_code)s')
+#------------------------------------------------------------------------------------------------#
+db.define_table(
+    'output_invoice',
+    Field('name', 'text'),
+    Field('customer_name','text'),
+    Field('customer_address','text'),
+    Field('created_at', default=get_time)
+)
 
+#------------------------------------------------------------------------------------------------#
+db.define_table(
+    'output_invoice_details',
+    Field('output_invoice_id', 'reference output_invoice',
+          filter_out=lambda output_invoice: output_invoice.name if output_invoice else ''),
+    Field('product_id', 'reference product',
+          filter_out=lambda product: product.product_code if product else ''),
+    Field('quantity', 'integer'),
+    Field('unit_price', 'integer'),
+    Field('total_price', compute=lambda row: row.quantity * row.unit_price)
+)
 
 # Hoa don va chi tiet hoa don
 # Hoa don field ngay tao , ten hoa don
