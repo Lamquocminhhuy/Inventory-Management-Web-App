@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+[[include 'bootstrap/head.html']] 
+
+
+
+
+
+</style>
+</head>
+
+<body>
+	[[include 'bootstrap/bs-header.html']]
+
+		<div class="container">
+            <div>
+                <h3 class="text-center">Reports</h3>
+                <form class="row" method="post" action="[[=URL('statistic')]]">
+                  <div class="mb-3 col-6">
+                    <label class="form-label">From</label>
+                    <input type="date" class="form-control" name="from" required>
+               
+                  </div>
+                  <div class="mb-3 col-6">
+                    <label class="form-label">To</label>
+                    <input type="date" class="form-control" name="to" required>
+                  </div>
+              
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+          <div class="container"> 
+            <div class="row">
+              [[if len(input_invoice) != 0 : ]]
+              
+              <h4 clas="col-6">From: [[=a]]</h4>
+              <h4 clas="col-6">To: [[=b]]</h4>
+            </div>
+           
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Product</th>
+                  <th scope="col">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+       
+         
+        
+                  [[index = 0]]  
+                  [[for d in dct:]]
+                <tr>
+                
+                
+                  [[index += 1]]
+                  <th scope="row">[[=index]]</th>
+                  <td>[[=d]]</td>
+                  <td>[[=dct[d]]]</td>
+                  
+             
+                </tr>
+                  [[pass]]
+                  [[else:]]
+                  [[if len(message) > 0:]]
+                  <h5 class="text-center mt-3">[[=message]]</h5>
+                  [[pass]]
+                [[pass]]
+              </tbody>
+            </table>
+          </div>
+           
+        </div>
+			
+
+</body>
+
+</html>

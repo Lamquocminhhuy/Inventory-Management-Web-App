@@ -36,10 +36,7 @@ from py4web.utils.grid import Grid, GridClassStyleBulma, GridClassStyle
 import json
 
 
-@action('dashboard')
-@action.uses(db, auth.user, 'dashboard.html')
-def dashboard():
-    return dict()
+
 
 
 @action('index', method=["GET", "POST"])
@@ -47,8 +44,9 @@ def dashboard():
 def index():
     if request.method == 'GET':
         products = db(db.product.id > 0).select()
-        invoices = db(db.input_invoice.id > 0).select()
-        return dict(products=products, invoices=invoices)
+        invoices = db(db.output_invoice.id > 0).select()
+        import_invoices = db(db.input_invoice.id > 0).select()
+        return dict(products=products, invoices=invoices, import_invoices=import_invoices)
 
 
 @action('product', method=["GET", "POST"])
@@ -109,10 +107,9 @@ def user(path=None):
             ['By Email', lambda val: db.auth_user.email.contains(val)]])
     return dict(grid=grid)
 
-
-@action('get_invoice/<invoice_id:int>', method=["GET"])
-@action.uses(db, auth.user, 'invoice.html')
-def get_invoice(invoice_id=None):
+@action('get-import-invoice/<invoice_id:int>', method=["GET"])
+@action.uses(db, auth.user, 'import_invoice.html')
+def get_import_invoice(invoice_id=None):
 
     if request.method == "GET":
         total = 0
@@ -131,10 +128,47 @@ def get_invoice(invoice_id=None):
 
         return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
 
+@action('get_invoice/<invoice_id:int>', method=["GET"])
+@action.uses(db, auth.user, 'invoice.html')
+def get_invoice(invoice_id=None):
+
+    if request.method == "GET":
+        total = 0
+        total_product = []
+
+        invoice = db(db.output_invoice.id == invoice_id).select()
+
+        invoice_details = db(
+            db.output_invoice.id == db.output_invoice_details.output_invoice_id == invoice_id).select()
+
+        products = db(db.product.id > 0).select()
+
+        for i in invoice_details:
+            total += int(i.total_price)
+            total_product.append(i.product_id)
+
+        return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
+
 
 @action('post_invoice/<invoice_id:int>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'add.html')
 def post_invoice(invoice_id=None):
+    assert invoice_id is not None
+
+    db.output_invoice_details.insert(
+        output_invoice_id=invoice_id,
+        product_id=request.params.get("productId"),
+        quantity=int(request.params.get("quantity")),
+        unit_price=int(request.params.get("unit_price"))
+    )
+   
+  
+
+    redirect(URL('get_invoice', invoice_id))
+
+@action('post_import_invoice/<invoice_id:int>', method=["GET", "POST"])
+@action.uses(db, auth.user, 'add.html')
+def post_import_invoice(invoice_id=None):
     assert invoice_id is not None
 
     db.input_invoice_details.insert(
@@ -146,25 +180,12 @@ def post_invoice(invoice_id=None):
    
   
 
-    redirect(URL('get_invoice', invoice_id))
+    redirect(URL('get-import-invoice', invoice_id))
 
 
-@action('create_invoice', method=["POST"])
+@action('delete_import_invoice', method=["POST"])
 @action.uses(db, auth.user)
-def create_invoice():
-    if request.params.get("name"):
-
-        db.input_invoice.insert(name=request.params.get("name"))
-        invoice = db(db.input_invoice.name ==
-                     request.params.get("name")).select()
-        invoice_id = invoice[0].id
-
-    redirect(URL('get_invoice', invoice_id))
-
-
-@action('delete_invoice', method=["POST"])
-@action.uses(db, auth.user)
-def delete_invoice():
+def delete_import_invoice():
     if request.params.get("id"):
 
         db(db.input_invoice.id == request.params.get("id")).delete()
@@ -172,32 +193,66 @@ def delete_invoice():
     redirect(URL('index'))
 
 
-@action('delete_product/<input_invoice_details_id:int>/<invoice_id:int>')
+@action('delete_import_product/<input_invoice_details_id:int>/<invoice_id:int>')
 @action.uses(db, session, auth.user)
 def delete(input_invoice_details_id, invoice_id=None):
     assert input_invoice_details_id, invoice_id is not None
     db(db.input_invoice_details.id == input_invoice_details_id).delete()
 
+    redirect(URL('get-import-invoice', invoice_id))
+
+@action('create_invoice', method=["POST"])
+@action.uses(db, auth.user)
+def create_export_invoice():
+    if request.params.get("name"):
+
+        db.output_invoice.insert(name=request.params.get("name"))
+        invoice = db(db.output_invoice.name ==
+                     request.params.get("name")).select()
+        invoice_id = invoice[0].id
+
     redirect(URL('get_invoice', invoice_id))
 
 
-@action('test', method=["GET", "POST"])
-@action.uses(db, auth.user, 'test.html')
-def test():
-    if request.method == 'GET':
-        return dict()
-    else:
-        products = request.json
 
-        redirect(URL('index'))
+@action('create_import_invoice', method=["POST"])
+@action.uses(db, auth.user)
+def create_import_invoice():
+    if request.params.get("name"):
+
+        db.input_invoice.insert(name=request.params.get("name"))
+        invoice = db(db.input_invoice.name ==
+                     request.params.get("name")).select()
+        invoice_id = invoice[0].id
+
+    redirect(URL('get-import-invoice', invoice_id))
+
+@action('delete_invoice', method=["POST"])
+@action.uses(db, auth.user)
+def delete_invoice():
+    if request.params.get("id"):
+
+        db(db.output_invoice.id == request.params.get("id")).delete()
+
+    redirect(URL('index'))
+
+
+@action('delete_product/<output_invoice_details_id:int>/<invoice_id:int>')
+@action.uses(db, session, auth.user)
+def delete(output_invoice_details_id, invoice_id=None):
+    assert output_invoice_details_id, invoice_id is not None
+    db(db.output_invoice_details.id == output_invoice_details_id).delete()
+
+    redirect(URL('get_invoice', invoice_id))
+
 
 @action('print-invoice/<invoice_id:int>', method=["GET"])
 @action.uses(db, auth.user, 'hoadon.html')
 def invoiceJson(invoice_id):
     total = 0
     total_product = []
-    invoice = db(db.input_invoice.id == invoice_id).select()
-    invoice_details = db(db.input_invoice.id == db.input_invoice_details.input_invoice_id ==  invoice_id).select()
+    invoice = db(db.output_invoice.id == invoice_id).select()
+    invoice_details = db(db.output_invoice.id == db.output_invoice_details.output_invoice_id ==  invoice_id).select()
     for i in invoice_details:
         total += int(i.total_price)
         total_product.append(i.product_id)
@@ -213,24 +268,40 @@ def invoiceJson(invoice_id):
 @action.uses(db, auth.user)
 def customer(invoice_id = None):
     assert invoice_id is not None
-    invoice = db(db.input_invoice.id == invoice_id)
+    invoice = db(db.output_invoice.id == invoice_id)
     invoice.update(customer_name=request.params.get("fullname"),customer_address=request.params.get("address"))
     
 
     redirect(URL('get_invoice', invoice_id))
 
 
-@action('statistic', method=["GET"])
-@action.uses(db, auth.user)
+@action('statistic', method=["GET", "POST"])
+@action.uses(db, auth.user, 'statistic.html')
 def statistic():
-    
-    a = '2021-11-05'
-    b = '2021-11-05'
-    # return dict json 
+    if request.method == "GET":
+        return dict(input_invoice={}, dct={}, message={})
+    else:
+        a = request.params.get("from")
+        b = request.params.get("to")
+        print(a,b)
+        # return dict json 
 
-    products = db((db.input_invoice.id == db.input_invoice_details.id) & (db.input_invoice.created_at >= a and db.input_invoice.created_at <= b)).select()
+        products = db(((db.output_invoice.id == db.output_invoice_details.output_invoice_id) & (db.output_invoice.created_at >= a) & (db.output_invoice.created_at <= b))).select()
+
+        if len(products) == 0:
    
-    return dict(products=products)
+            return dict(input_invoice={}, message="Don't have any invoices")
+        else:
+            dct = dict()
+ 
+            for p in products:
+                if p.output_invoice_details.product_id in dct:
+                    dct[p.output_invoice_details.product_id] += p.output_invoice_details.quantity
+                else:
+                    dct[p.output_invoice_details.product_id] = p.output_invoice_details.quantity
+     
+       
+        return dict(input_invoice=products, dct=dct, a=a,b=b)
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'edit.html')
 # def edit(product_id=None):

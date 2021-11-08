@@ -55,8 +55,8 @@ ul,li{
 							</div>
 							<div class="card-body">
 								   
-									<h3 class="card-title">6</h3>
-					
+								<h3 class="card-title">9999</h3>
+								
 							</div>
 						</div>
 					</div>
@@ -120,7 +120,7 @@ ul,li{
 					</div>
 
 				</div>
-
+				
 				<div class="col-lg-4 mb-5">
 					
 					<div class="card">
@@ -136,6 +136,7 @@ ul,li{
 					       
 							<button class="btn btn-success btn-sm btn-block" data-bs-toggle="modal"
 							data-bs-target="#InvoiceModal">Create Invoice</button>
+									
 							<div class="modal" id="InvoiceModal" >
 								<div class="modal-dialog">
 								  <div class="modal-content">
@@ -219,7 +220,7 @@ ul,li{
 							
 									
 							   
-									<form class="row g-3" action="[[=URL('create_invoice')]]" method="POST">
+									<form class="row g-3" action="[[=URL('create_import_invoice')]]" method="POST">
 										
 								
 										
@@ -246,14 +247,14 @@ ul,li{
 									<th> Details </th>
 								</tr>
 								[[j = 0]]
-								[[for invoice in invoices:]]
+								[[for invoice in import_invoices:]]
 								[[j += 1]]
 								<tr>
 									<td>[[=j]]</td>
 									<td>[[=invoice.name]]</td>
 									<td>[[=invoice.created_at]]</td>
 							
-									<td><a class="btn btn-sm btn-info" href="[[=URL('get_invoice',invoice.id)]]">Details</td>
+									<td><a class="btn btn-sm btn-info" href="[[=URL('get-import-invoice',invoice.id)]]">Details</td>
 								</tr>
 								
 								[[pass]]	
@@ -273,9 +274,9 @@ ul,li{
 	<div class="container row">
 		<div class="textbox text-center col-12">
 
-			<h3>Farm Fresh To You</h3>
+			<h3>CIT TECH SHOP</h3>
 			<p>
-				268 Spring Haven Trail, Wayne, New Jersey<br>
+				3/2, Xuan Khanh, Ninh Kieu, Can Tho<br>
 			
 			</p>
 		</div>
