@@ -279,29 +279,26 @@ def customer(invoice_id = None):
 @action.uses(db, auth.user, 'statistic.html')
 def statistic():
     if request.method == "GET":
-        return dict(input_invoice={}, dct={}, message={})
+        return dict(output_invoice={}, dct={}, message={})
     else:
-        a = request.params.get("from")
-        b = request.params.get("to")
-        print(a,b)
-        # return dict json 
+        fromDate = request.params.get("from")
+        toDate = request.params.get("to")
 
-        products = db(((db.output_invoice.id == db.output_invoice_details.output_invoice_id) & (db.output_invoice.created_at >= a) & (db.output_invoice.created_at <= b))).select()
+        products = db(((db.output_invoice.id == db.output_invoice_details.output_invoice_id) & (db.output_invoice.created_at >= fromDate) & (db.output_invoice.created_at <= toDate))).select()
 
         if len(products) == 0:
-   
-            return dict(input_invoice={}, message="Don't have any invoices")
+            return dict(output_invoice={}, message="Don't have any invoices")
         else:
-            dct = dict()
+            report = dict()
  
             for p in products:
-                if p.output_invoice_details.product_id in dct:
-                    dct[p.output_invoice_details.product_id] += p.output_invoice_details.quantity
+                if p.output_invoice_details.product_id in report:
+                    report[p.output_invoice_details.product_id] += p.output_invoice_details.quantity
                 else:
-                    dct[p.output_invoice_details.product_id] = p.output_invoice_details.quantity
+                    report[p.output_invoice_details.product_id] = p.output_invoice_details.quantity
      
        
-        return dict(input_invoice=products, dct=dct, a=a,b=b)
+        return dict(output_invoice=products, report=report, fromDate=fromDate,toDate=toDate)
 # @action('edit_product/<product_id:int>', method=["GET", "POST"])
 # @action.uses(db, session, auth.user, 'edit.html')
 # def edit(product_id=None):

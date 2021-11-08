@@ -35,10 +35,10 @@
             </div>
           <div class="container"> 
             <div class="row">
-              [[if len(input_invoice) != 0 : ]]
+              [[if len(output_invoice) != 0 : ]]
               
-              <h4 clas="col-6">From: [[=a]]</h4>
-              <h4 clas="col-6">To: [[=b]]</h4>
+              <h4 clas="col-6">From: [[=fromDate]]</h4>
+              <h4 clas="col-6">To: [[=toDate]]</h4>
             </div>
            
             <table class="table">
@@ -55,14 +55,14 @@
          
         
                   [[index = 0]]  
-                  [[for d in dct:]]
+                  [[for d in report:]]
                 <tr>
                 
                 
                   [[index += 1]]
                   <th scope="row">[[=index]]</th>
                   <td>[[=d]]</td>
-                  <td>[[=dct[d]]]</td>
+                  <td>[[=report[d]]]</td>
                   
              
                 </tr>
