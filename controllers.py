@@ -285,30 +285,60 @@ def statistic():
         toDate = request.params.get("to")
 
         products = db(((db.output_invoice.id == db.output_invoice_details.output_invoice_id) & (db.output_invoice.created_at >= fromDate) & (db.output_invoice.created_at <= toDate))).select()
-
+        import_products = db(((db.input_invoice.id == db.input_invoice_details.input_invoice_id) & (db.input_invoice.created_at >= fromDate) & (db.input_invoice.created_at <= toDate))).select()
+    
         if len(products) == 0:
-            return dict(output_invoice={}, message="Don't have any invoices")
+            return dict(output_invoice={}, message="Don't have enough data!")
         else:
             report = dict()
+            import_report = dict()
+   
  
-            for p in products:
+            for p in products: # Tính số lượng hàng hóa xuất nếu chưa có thì thêm vô obj nếu đã có thì cộng thêm value vô đúng key
                 if p.output_invoice_details.product_id in report:
                     report[p.output_invoice_details.product_id] += p.output_invoice_details.quantity
                 else:
                     report[p.output_invoice_details.product_id] = p.output_invoice_details.quantity
-     
-       
-        return dict(output_invoice=products, report=report, fromDate=fromDate,toDate=toDate)
-# @action('edit_product/<product_id:int>', method=["GET", "POST"])
-# @action.uses(db, session, auth.user, 'edit.html')
-# def edit(product_id=None):
-#     assert product_id is not None
-#     # p = db(db.product.id == product_id).select()
-#        p = db.product[product_id]
-#     if p is None:
-#         # Nothing found to be edited!
-#         redirect(URL('index'))
-#     form = Form(db.product, record=p, deletable=False, csrf_session=session, formstyle=FormStyleBulma)
-#     if form.accepted:
-#         redirect(URL('index'))
-#     return dict(form=form)
+            
+            
+            for i in import_products:
+                if i.input_invoice_details.product_id in import_report:
+                    import_report[i.input_invoice_details.product_id] += i.input_invoice_details.quantity
+                else:
+                    import_report[i.input_invoice_details.product_id] = i.input_invoice_details.quantity
+         
+         
+            arr = []
+            productList = []
+            for im in import_report:
+                product = {
+                    'name' : im,
+                    'import' : import_report[im] , #dict['key'] --> value
+                    'export' : 0 
+                }
+                arr.append(im)
+                productList.append(product)
+            for ex in report:
+                if ex not in arr:
+                    product = {
+                        'name' : ex, 
+                        'import' : 0 ,
+                        'export' : report[ex] #dict['key'] --> value
+                    }
+                    productList.append(product)
+                else:
+                    index = arr.index(ex)
+                    productList[index]['export'] = report[ex] 
+
+            print(productList)    
+        
+        return dict(output_invoice=products, report=report, import_report=import_report, fromDate=fromDate,toDate=toDate, productList=productList)
+
+
+@action('test', method=["GET"])
+@action.uses(db, auth.user, 'test.html')
+def test():
+    return dict()   
+ 
+    
+

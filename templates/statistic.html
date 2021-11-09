@@ -15,67 +15,89 @@
 <body>
 	[[include 'bootstrap/bs-header.html']]
 
-		<div class="container">
-            <div>
-                <h3 class="text-center">Reports</h3>
-                <form class="row" method="post" action="[[=URL('statistic')]]">
-                  <div class="mb-3 col-6">
-                    <label class="form-label">From</label>
-                    <input type="date" class="form-control" name="from" required>
-               
-                  </div>
-                  <div class="mb-3 col-6">
-                    <label class="form-label">To</label>
-                    <input type="date" class="form-control" name="to" required>
-                  </div>
-              
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-
-            </div>
-          <div class="container"> 
-            <div class="row">
-              [[if len(output_invoice) != 0 : ]]
-              
-              <h4 clas="col-6">From: [[=fromDate]]</h4>
-              <h4 clas="col-6">To: [[=toDate]]</h4>
-            </div>
+		<div class="container mt-3">
+      <div class="card">
+        <div class="card-body">
+          <div>
+            <h3 class="text-center">Export Product Reports</h3>
+            <form class="row" method="post" action="[[=URL('statistic')]]">
+              <div class="mb-3 col-6">
+                <label class="form-label">From</label>
+                <input type="date" class="form-control" name="from" required>
            
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Product</th>
-                  <th scope="col">Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                
-       
-         
-        
-                  [[index = 0]]  
-                  [[for d in report:]]
-                <tr>
-                
-                
-                  [[index += 1]]
-                  <th scope="row">[[=index]]</th>
-                  <td>[[=d]]</td>
-                  <td>[[=report[d]]]</td>
-                  
+              </div>
+              <div class="mb-3 col-6">
+                <label class="form-label">To</label>
+                <input type="date" class="form-control" name="to" required>
+              </div>
+          
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        </div>
+      </div>
+      
+    </div>
+          <div class="container mt-3"> 
+            [[if len(output_invoice) != 0 : ]]
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
              
-                </tr>
-                  [[pass]]
-                  [[else:]]
-                  [[if len(message) > 0:]]
-                  <h5 class="text-center mt-3">[[=message]]</h5>
-                  [[pass]]
-                [[pass]]
-              </tbody>
-            </table>
-          </div>
+                  <h4>Quantity of products exported</h4>
+                  <p>From: [[=fromDate]] to: [[=toDate]]</p>
+         
+               
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+      
+                      <th scope="col">Hàng hóa</th>
+                      <th scope="col">Tồn đầu kỳ</th>
+                      <th scope="col">Nhập trong kỳ</th>
+                      <th scope="col">Số lượng xuất</th>
+                     
+                      <th scope="col">Tồn cuối kì</th>
+                    
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
            
+             
+            
+                      [[index = 0]]  
+                
+           
+                      [[for product in productList:]]
+                    
+                      
+                    <tr>
+                      [[index += 1]]
+                 
+                      <th scope="row">[[=index]]</th>
+                      <td>[[=product['name']]]</td>
+                      <td>0</td>
+                      <td>[[=product['import']]]</td>
+                      <td>[[=product['export']]]</td>
+                      <td>[[= product['import'] - product['export'] ]]</td>
+                      
+                 
+                    </tr>
+               
+                      [[pass]]
+
+                    [[else:]] [[if len(message) > 0:]]<h5 class="text-center mt-3">[[=message]]</h5>[[pass]]
+                    
+                [[pass]]
+                  </tbody>
+                </table>
+              </div>
+               
+              </div>
+            </div>
+            
         </div>
 			
 
