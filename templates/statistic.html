@@ -19,7 +19,7 @@
       <div class="card">
         <div class="card-body">
           <div>
-            <h3 class="text-center">Export Product Reports</h3>
+            <h3 class="text-center">Product Reports</h3>
             <form class="row" method="post" action="[[=URL('statistic')]]">
               <div class="mb-3 col-6">
                 <label class="form-label">From</label>
@@ -44,21 +44,21 @@
               <div class="card-body">
                 <div class="row">
              
-                  <h4>Quantity of products exported</h4>
+              
                   <p>From: [[=fromDate]] to: [[=toDate]]</p>
          
                
                 <table class="table table-bordered">
                   <thead>
-                    <tr>
+                    <tr class="text-center">
                       <th scope="col">#</th>
       
-                      <th scope="col">Hàng hóa</th>
-                      <th scope="col">Tồn đầu kỳ</th>
-                      <th scope="col">Nhập trong kỳ</th>
-                      <th scope="col">Số lượng xuất</th>
+                      <th scope="col">Product</th>
+                      <th scope="col">Opening stock</th>
+                      <th scope="col">Import Amount</th>
+                      <th scope="col">Export Amount</th>
                      
-                      <th scope="col">Tồn cuối kì</th>
+                      <th scope="col">Closing stock</th>
                     
                     </tr>
                   </thead>
@@ -73,7 +73,7 @@
                       [[for product in productList:]]
                     
                       
-                    <tr>
+                    <tr class="text-center">
                       [[index += 1]]
                  
                       <th scope="row">[[=index]]</th>

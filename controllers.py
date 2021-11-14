@@ -307,13 +307,16 @@ def statistic():
                 else:
                     import_report[i.input_invoice_details.product_id] = i.input_invoice_details.quantity
          
+            print(report)
          
+            for i in report:
+                print(i)
             arr = []
             productList = []
             for im in import_report:
                 product = {
                     'name' : im,
-                    'import' : import_report[im] , #dict['key'] --> value
+                    'import' : import_report[im] , 
                     'export' : 0 
                 }
                 arr.append(im)
@@ -330,7 +333,7 @@ def statistic():
                     index = arr.index(ex)
                     productList[index]['export'] = report[ex] 
 
-            print(productList)    
+              
         
         return dict(output_invoice=products, report=report, import_report=import_report, fromDate=fromDate,toDate=toDate, productList=productList)
 
