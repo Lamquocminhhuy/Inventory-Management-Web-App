@@ -1,43 +1,11 @@
-"""
-This file defines actions, i.e. functions the URLs are mapped into
-The @action(path) decorator exposed the function at URL:
-
-    http://127.0.0.1:8000/{app_name}/{path}
-
-If app_name == '_default' then simply
-
-    http://127.0.0.1:8000/{path}
-
-If path == 'index' it can be omitted:
-
-    http://127.0.0.1:8000/
-
-The path follows the bottlepy syntax.
-
-@action.uses('generic.html')  indicates that the action uses the generic.html template
-@action.uses(session)         indicates that the action uses the session
-@action.uses(db)              indicates that the action uses the db
-@action.uses(T)               indicates that the action uses the i18n & pluralization
-@action.uses(auth.user)       indicates that the action requires a logged in user
-@action.uses(auth)            indicates that the action requires the auth object
-
-session, db, T, auth, and templates are examples of Fixtures.
-Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
-"""
-
-from os import truncate
-from types import MethodType
-from py4web import action, request, abort, redirect, URL
+from py4web import action, request, redirect, URL
 from yatl.helpers import A, P
-from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
-from .models import get_user_email
+from .common import db, session, T, auth
+
 from py4web.utils.form import Form, FormStyleBulma
-from py4web.utils.grid import Grid, GridClassStyleBulma, GridClassStyle
-import json
+from py4web.utils.grid import Grid, GridClassStyleBulma
 
-
-
-
+# Get index page (login page)
 
 @action('index', method=["GET", "POST"])
 @action.uses(db, auth.user, 'index.html')
@@ -48,6 +16,8 @@ def index():
         import_invoices = db(db.input_invoice.id > 0).select()
         return dict(products=products, invoices=invoices, import_invoices=import_invoices)
 
+
+# Product management page - Using Py4web Grid
 
 @action('product', method=["GET", "POST"])
 @action('product/<path:path>', method=["GET", "POST"])
@@ -69,7 +39,7 @@ def product(path=None):
     total = db(db.product.id > 0).select()
     return dict(grid=grid, total=len(total))
 
-
+# Category Management Page - Using Py4web Grid
 @action('category', method=["GET", "POST"])
 @action('category/<path:path>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'category.html')
@@ -90,6 +60,7 @@ def category(path=None):
     return dict(grid=grid, total=len(total))
 
 
+# User Management Page - Using Py4Web Grid
 @action('user', method=["GET", "POST"])
 @action('user/<path:path>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'user.html')
@@ -107,6 +78,7 @@ def user(path=None):
             ['By Email', lambda val: db.auth_user.email.contains(val)]])
     return dict(grid=grid)
 
+# Get specific import invoice by id
 @action('get-import-invoice/<invoice_id:int>', method=["GET"])
 @action.uses(db, auth.user, 'import_invoice.html')
 def get_import_invoice(invoice_id=None):
@@ -128,6 +100,7 @@ def get_import_invoice(invoice_id=None):
 
         return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
 
+# Get specific export invoice with id
 @action('get_invoice/<invoice_id:int>', method=["GET"])
 @action.uses(db, auth.user, 'invoice.html')
 def get_invoice(invoice_id=None):
@@ -149,7 +122,7 @@ def get_invoice(invoice_id=None):
 
         return dict(invoice=invoice, invoice_details=invoice_details, total=total, products=products, total_products=len(total_product))
 
-
+# Create product in export in invoice
 @action('post_invoice/<invoice_id:int>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'add.html')
 def post_invoice(invoice_id=None):
@@ -166,6 +139,7 @@ def post_invoice(invoice_id=None):
 
     redirect(URL('get_invoice', invoice_id))
 
+# Create product on import invoice
 @action('post_import_invoice/<invoice_id:int>', method=["GET", "POST"])
 @action.uses(db, auth.user, 'add.html')
 def post_import_invoice(invoice_id=None):
@@ -183,6 +157,7 @@ def post_import_invoice(invoice_id=None):
     redirect(URL('get-import-invoice', invoice_id))
 
 
+# Delete import invoice by id
 @action('delete_import_invoice', method=["POST"])
 @action.uses(db, auth.user)
 def delete_import_invoice():
@@ -192,7 +167,7 @@ def delete_import_invoice():
 
     redirect(URL('index'))
 
-
+# Delete product in import invoice
 @action('delete_import_product/<input_invoice_details_id:int>/<invoice_id:int>')
 @action.uses(db, session, auth.user)
 def delete(input_invoice_details_id, invoice_id=None):
@@ -201,6 +176,7 @@ def delete(input_invoice_details_id, invoice_id=None):
 
     redirect(URL('get-import-invoice', invoice_id))
 
+# Create export invoice
 @action('create_invoice', method=["POST"])
 @action.uses(db, auth.user)
 def create_export_invoice():
@@ -214,7 +190,7 @@ def create_export_invoice():
     redirect(URL('get_invoice', invoice_id))
 
 
-
+# Create import invoice
 @action('create_import_invoice', method=["POST"])
 @action.uses(db, auth.user)
 def create_import_invoice():
@@ -227,6 +203,7 @@ def create_import_invoice():
 
     redirect(URL('get-import-invoice', invoice_id))
 
+# Delete export invoice
 @action('delete_invoice', method=["POST"])
 @action.uses(db, auth.user)
 def delete_invoice():
@@ -236,7 +213,7 @@ def delete_invoice():
 
     redirect(URL('index'))
 
-
+# Delete product in export invoice
 @action('delete_product/<output_invoice_details_id:int>/<invoice_id:int>')
 @action.uses(db, session, auth.user)
 def delete(output_invoice_details_id, invoice_id=None):
@@ -245,7 +222,7 @@ def delete(output_invoice_details_id, invoice_id=None):
 
     redirect(URL('get_invoice', invoice_id))
 
-
+# Create a print hmtl for export invoice
 @action('print-invoice/<invoice_id:int>', method=["GET"])
 @action.uses(db, auth.user, 'hoadon.html')
 def invoiceJson(invoice_id):
@@ -263,7 +240,7 @@ def invoiceJson(invoice_id):
     products = db(db.product.id > 0).select()
     return dict(invoice=invoice, details = invoice_details, total = total, total_product = len(total_product), products = products)
 
-
+# Update custome infor for export invoice
 @action('customer-infor/<invoice_id:int>', method=["POST"])
 @action.uses(db, auth.user)
 def customer(invoice_id = None):
@@ -274,7 +251,7 @@ def customer(invoice_id = None):
 
     redirect(URL('get_invoice', invoice_id))
 
-
+# Get and calculate data for  report page
 @action('statistic', method=["GET", "POST"])
 @action.uses(db, auth.user, 'statistic.html')
 def statistic():
@@ -338,10 +315,7 @@ def statistic():
         return dict(output_invoice=products, report=report, import_report=import_report, fromDate=fromDate,toDate=toDate, productList=productList)
 
 
-@action('test', method=["GET"])
-@action.uses(db, auth.user, 'test.html')
-def test():
-    return dict()   
+
  
     
 

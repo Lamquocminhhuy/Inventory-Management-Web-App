@@ -121,14 +121,20 @@
             
             <div class="col-md-12">
               <label for="inputState" class="form-label">Product</label>
-              <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search..." name="productId">
+      
          
-              <datalist id="datalistOptions">
+              <select id="inputState" class="form-control" name="productId" >
+                <option selected>---Choose product----</option>
                 [[for p in products:]]
-              <option value="[[=p.id]]">[[=p.product_code]]</option>
-              [[pass]]
-                
-              </datalist>
+                    
+                <option value="[[=p.id]]">[[=p.product_code]]</option>
+                    
+                  
+                [[pass]]
+              
+                    
+                  
+              </select>
            
             
             
